@@ -3,9 +3,6 @@ from sklearn.model_selection import GridSearchCV
 from .utils import *
 
 def get_rf_param_grid():
-    """
-    Get Random Forest hyperparameter grid
-    """
     return {
         'n_estimators': [100, 200],
         'max_depth': [10, 20, None],
@@ -13,9 +10,6 @@ def get_rf_param_grid():
     }
 
 def train_random_forest(X_train, y_train, param_grid=None):
-    """
-    Train Random Forest with grid search
-    """
     if param_grid is None:
         param_grid = get_rf_param_grid()
     
@@ -30,35 +24,20 @@ def train_random_forest(X_train, y_train, param_grid=None):
     return grid_search.best_estimator_, grid_search.best_params_
 
 def run_random_forest_pipeline(df_clean, test_size=0.2):
-    """
-    Complete Random Forest pipeline using utils
-    """
     print("=== RANDOM FOREST PIPELINE ===")
     
-    # Prepare data
     X, y, selected_features = prepare_data(df_clean)
-    
-    # Split data
     X_train, X_test, y_train, y_test = split_data(X, y, test_size)
-    
-    # Train model
     model, best_params = train_random_forest(X_train, y_train)
-    
-    # Evaluate model
     results = evaluate_model(model, X_test, y_test, "Random Forest")
-    
-    # Plot results
     plot_results(model, X_test, y_test, selected_features, "Random Forest")
     
-    # Save model
     save_model(model, 'models/random_forest.pkl', {
         'selected_features': selected_features,
         'best_params': best_params
     })
     
-    # Print summary
     print_model_summary("Random Forest", results, selected_features, best_params)
-    
     return model, results
 
 if __name__ == "__main__":

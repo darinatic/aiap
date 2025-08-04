@@ -158,7 +158,8 @@ class DataPreprocessor:
         for col in numerical_cols:
             if df_clean[col].isnull().sum() > 0:
                 median_val = df_clean[col].median()
-                df_clean[col].fillna(median_val, inplace=True)
+                # Fix: Use proper assignment instead of chained assignment with inplace
+                df_clean[col] = df_clean[col].fillna(median_val)
                 print(f"Imputed {col} missing values with median: {median_val:.2f}")
         
         # Categorical columns: use mode imputation  
@@ -166,11 +167,12 @@ class DataPreprocessor:
         for col in categorical_cols:
             if col != 'Activity Level' and df_clean[col].isnull().sum() > 0:
                 mode_val = df_clean[col].mode().iloc[0] if len(df_clean[col].mode()) > 0 else 'unknown'
-                df_clean[col].fillna(mode_val, inplace=True)
+                # Fix: Use proper assignment instead of chained assignment with inplace
+                df_clean[col] = df_clean[col].fillna(mode_val)
                 print(f"Imputed {col} missing values with mode: {mode_val}")
         
         return df_clean
-    
+        
     def fit_transform(self, df):
         """Fit preprocessing and transform data"""
         df_clean = self.clean_data(df)

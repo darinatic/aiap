@@ -15,12 +15,11 @@ def select_features_from_eda(df):
         'MetalOxideSensor_Unit4',     # Highest correlation (0.308)
         'CO2_ElectroChemicalSensor',  # Second highest (0.268)
         'CO_GasSensor',               # Strong negative (-0.229)
+        'MetalOxideSensor_Unit2',     # Moderate positive (0.194)
         'CO2_InfraredSensor',         # Moderate negative (-0.189)
-        'Temperature',                # Moderate negative (-0.162)
-        'Time of Day'                 # Weak but might help (-0.092)
+        'Temperature'                 # Moderate negative (-0.162)
     ]
     
-    print(f"Selected features based on EDA: {selected_features}")
     return selected_features
 
 def prepare_data(df_clean, selected_features=None, target_col='Activity Level'):
@@ -103,51 +102,14 @@ def plot_confusion_matrix(y_test, y_pred, model_name="Model", ax=None):
     
     return cm
 
-def plot_feature_importance(feature_names, importances, model_name="Model", ax=None):
-    """
-    Plot feature importance
-    """
-    if ax is None:
-        fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-    
-    importance_df = pd.DataFrame({
-        'feature': feature_names,
-        'importance': importances
-    }).sort_values('importance', ascending=False)
-    
-    ax.barh(range(len(importance_df)), importance_df['importance'])
-    ax.set_yticks(range(len(importance_df)))
-    ax.set_yticklabels(importance_df['feature'])
-    ax.set_xlabel('Importance')
-    ax.set_title(f'{model_name} - Feature Importance')
-    ax.invert_yaxis()
-    
-    if ax is None:
-        plt.tight_layout()
-        plt.show()
-    
-    return importance_df
-
 def plot_results(model, X_test, y_test, feature_names, model_name="Model"):
     """
-    Plot both confusion matrix and feature importance
+    Plot confusion matrix only
     """
     y_pred = model.predict(X_test)
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
-    
-    # Confusion matrix
-    plot_confusion_matrix(y_test, y_pred, model_name, ax=ax1)
-    
-    # Feature importance (if available)
-    if hasattr(model, 'feature_importances_'):
-        plot_feature_importance(feature_names, model.feature_importances_, model_name, ax=ax2)
-    else:
-        ax2.text(0.5, 0.5, 'Feature importance\nnot available', 
-                ha='center', va='center', transform=ax2.transAxes)
-        ax2.set_title(f'{model_name} - No Feature Importance')
-    
-    plt.tight_layout()
+    plt.figure(figsize=(8, 6))
+    plot_confusion_matrix(y_test, y_pred, model_name)
     plt.show()
 
 def save_model(model, filepath, additional_data=None):
