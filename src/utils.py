@@ -8,24 +8,17 @@ import joblib
 from pathlib import Path
 
 def select_features_from_eda(df):
-    """
-    Select features based on EDA insights
-    """
     selected_features = [
-        'MetalOxideSensor_Unit4',     # Highest correlation (0.308)
-        'CO2_ElectroChemicalSensor',  # Second highest (0.268)
-        'CO_GasSensor',               # Strong negative (-0.229)
-        'MetalOxideSensor_Unit2',     # Moderate positive (0.194)
-        'CO2_InfraredSensor',         # Moderate negative (-0.189)
-        'Temperature'                 # Moderate negative (-0.162)
+        'MetalOxideSensor_Unit4',
+        'CO2_ElectroChemicalSensor',
+        'CO_GasSensor',
+        'MetalOxideSensor_Unit2',
+        'CO2_InfraredSensor',
+        'Temperature'
     ]
-    
     return selected_features
 
 def prepare_data(df_clean, selected_features=None, target_col='Activity Level'):
-    """
-    Prepare features and target for ML
-    """
     if selected_features is None:
         selected_features = select_features_from_eda(df_clean)
     
@@ -33,31 +26,20 @@ def prepare_data(df_clean, selected_features=None, target_col='Activity Level'):
     y = df_clean[target_col]
     
     print(f"Data prepared: {len(selected_features)} features, {len(df_clean)} samples")
-    print(f"Target distribution:\n{y.value_counts()}")
-    
     return X, y, selected_features
 
 def split_data(X, y, test_size=0.2, random_state=42):
-    """
-    Split data into train and test sets
-    """
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
-    
     print(f"Data split - Train: {X_train.shape}, Test: {X_test.shape}")
     return X_train, X_test, y_train, y_test
 
 def evaluate_model(model, X_test, y_test, model_name="Model"):
-    """
-    Evaluate model performance and return metrics
-    """
     print(f"\nEvaluating {model_name}...")
     
-    # Predictions
     y_pred = model.predict(X_test)
     
-    # Metrics
     accuracy = accuracy_score(y_test, y_pred)
     f1_weighted = f1_score(y_test, y_pred, average='weighted')
     f1_macro = f1_score(y_test, y_pred, average='macro')
@@ -66,7 +48,6 @@ def evaluate_model(model, X_test, y_test, model_name="Model"):
     print(f"F1-Score (weighted): {f1_weighted:.4f}")
     print(f"F1-Score (macro): {f1_macro:.4f}")
     
-    # Classification report
     print(f"\nClassification Report:")
     class_report = classification_report(y_test, y_pred, output_dict=True)
     print(classification_report(y_test, y_pred))
@@ -80,9 +61,6 @@ def evaluate_model(model, X_test, y_test, model_name="Model"):
     }
 
 def plot_confusion_matrix(y_test, y_pred, model_name="Model", ax=None):
-    """
-    Plot confusion matrix
-    """
     if ax is None:
         fig, ax = plt.subplots(1, 1, figsize=(6, 5))
     
@@ -103,19 +81,12 @@ def plot_confusion_matrix(y_test, y_pred, model_name="Model", ax=None):
     return cm
 
 def plot_results(model, X_test, y_test, feature_names, model_name="Model"):
-    """
-    Plot confusion matrix only
-    """
     y_pred = model.predict(X_test)
-    
     plt.figure(figsize=(8, 6))
     plot_confusion_matrix(y_test, y_pred, model_name)
     plt.show()
 
 def save_model(model, filepath, additional_data=None):
-    """
-    Save model with optional additional data
-    """
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
     
     model_data = {'model': model}
@@ -126,19 +97,12 @@ def save_model(model, filepath, additional_data=None):
     print(f"Model saved to {filepath}")
 
 def load_model(filepath):
-    """
-    Load saved model
-    """
     model_data = joblib.load(filepath)
     print(f"Model loaded from {filepath}")
     return model_data
 
 def print_model_summary(model_name, results, selected_features, best_params=None):
-    """
-    Print model summary
-    """
     print(f"\n=== {model_name.upper()} SUMMARY ===")
-    print(f"Selected Features: {selected_features}")
     print(f"Test Accuracy: {results['accuracy']:.4f}")
     print(f"F1-Score (weighted): {results['f1_weighted']:.4f}")
     if best_params:

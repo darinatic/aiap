@@ -1,6 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
-from .utils import *
+from src.utils import *
 
 def get_rf_param_grid():
     return {
@@ -30,7 +30,7 @@ def run_random_forest_pipeline(df_clean, test_size=0.2):
     X_train, X_test, y_train, y_test = split_data(X, y, test_size)
     model, best_params = train_random_forest(X_train, y_train)
     results = evaluate_model(model, X_test, y_test, "Random Forest")
-    plot_results(model, X_test, y_test, selected_features, "Random Forest")
+    # plot_results(model, X_test, y_test, selected_features, "Random Forest")
     
     save_model(model, 'models/random_forest.pkl', {
         'selected_features': selected_features,
@@ -41,7 +41,7 @@ def run_random_forest_pipeline(df_clean, test_size=0.2):
     return model, results
 
 if __name__ == "__main__":
-    from data_preprocessing import load_and_clean_data
+    from src.data_preprocessing import load_and_clean_data
     
     df_clean, _ = load_and_clean_data()
     model, results = run_random_forest_pipeline(df_clean)
